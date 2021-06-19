@@ -63,6 +63,7 @@ if(isset($_POST['submit']))
     $star=$_POST['star'];
     $customer=$_POST['customer'];
     $status = 'Pending';
+    $variations = $_POST['variations'];
 
     $query_search="SELECT * FROM tbl_product ORDER BY id DESC LIMIT 1";
     $result_search = mysqli_query($conn, $query_search);
@@ -80,11 +81,20 @@ if(isset($_POST['submit']))
         $column_count=$_POST['column_count'];
         for ($x = 1; $x <=$column_count; $x++) 
         {
-          $column_name=$_POST['column_name'.$x];
+          $column_name=$_POST['column_name'.$x]; 
           $detail=$_POST['detail'.$x];
           $query_detail_insert="INSERT INTO `tbl_product_detail` (`id`, `column_name`, `detail`, `product_id`) VALUES (NULL, 
           '$column_name', '$detail', $no);";
           $result_detail_insert = mysqli_query($conn, $query_detail_insert);
+          
+        }
+        $column_count2=$_POST['column_count2']; 
+        for ($x = 1; $x <=$column_count2; $x++) 
+        {
+          $attribute_name=$_POST['attr_name'.$x];//red
+          $price=$_POST['detail'.$x]; //price
+          $query_variation = "INSERT INTO `tbl_product_variation` (`product_id`,`name`,`attributes`,`price`) VALUES ('$no','$variations', '$attribute_name', '$price')"; 
+          $result_variation = mysqli_query($conn, $query_variation);
           
         }
         $image_count=$_POST['image_count'];
@@ -415,26 +425,7 @@ The above copyright notice and this permission notice shall be included in all c
                                               " <div class='col-md-3'><input type='text' class='form-control' name='column_name"+number+"' placeholder='Column Name "+number+"' value='<?php if(isset($_POST['column_name"+number+"'])) echo $_POST['column_name"+number+"']?>'></div><div class='col-md-9'> <div class='form-group '><div class='position-relative'><input type='text' class='form-control' name='detail"+number+"' placeholder='Details Related To column Name' value='<?php if(isset($_POST['detail"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div>");
                                           }
                                       </script>
-                                      <!-- For Variation -->
-                                      <div id="column2" class="row col-md-12">
-                                        
-                                      </div>
-                                      <input type="text" id="column_count" name="column_count" value="0" hidden>
-                                      <div class="col-12 d-flex justify-content-center ">
-                                              <button type="button" name="button" onclick="addVariation()" class="btn btn-secondary">+ Add Column for Product Variation </button>
-                                      </div>
-                                      <script>
-                                          function addVariation() {
-                                              var number=document.getElementById('column_count').value;
-                                              number=parseInt(number);
-                                              // alert(number);
-                                              number=number+1;
-                                              document.getElementById('column_count').value=number;
-                                              document.getElementById("column2").insertAdjacentHTML("beforeend", 
-                                              " <div class='col-md-3'><input type='text' class='form-control' name='column_name"+number+"' placeholder='Column Name "+number+"' value='<?php if(isset($_POST['column_name"+number+"'])) echo $_POST['column_name"+number+"']?>'></div><div class='col-md-9'> <div class='form-group '><div class='position-relative'><input type='text' class='form-control' name='detail"+number+"' placeholder='Details Related To column Name' value='<?php if(isset($_POST['detail"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div>");
-                                          }
-                                      </script>
-
+                                      
                                       <div class="col-md-3"><label>MRP :</label></div>
                                       <div class="col-md-9">
                                           <div class="form-group ">
@@ -532,7 +523,52 @@ The above copyright notice and this permission notice shall be included in all c
                                               </div>
                                           </div>
                                       </div>
+                                      <div class="col-md-3"><label>Select Variations :</label></div>
+                                      <div class="col-md-9">
+                                          <div class="form-group ">
+                                              <div class="position-relative">
+                                              <select name="variations" class="form-control" >
+                                                <option value="">Select Variation Attributes</option>
+                                                <?php                                                   $get_attribute="SELECT * FROM `tbl_attributes`";
+                                                  $att_res = mysqli_query($conn, $get_attribute);
 
+                                                  while($dataAttr = mysqli_fetch_array($att_res)){ 
+                                                     ?>
+                                                    <option value="<?php echo $dataAttr['name'];?>"><?php echo $dataAttr['name'];?></option>                 
+                                                  <?php } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                      </div>
+                                      <!-- For Variation -->
+                                      <div id="column2" class="row col-md-12">
+                                        
+                                      </div>
+                                      <input type="text" id="column_count2" name="column_count2" value="0" hidden>
+                                      <div class="col-12 d-flex justify-content-center ">
+                                              <button type="button" name="button" onclick="addVariation()" class="btn btn-secondary">+ Add Column for Product Variation </button>
+                                      </div>
+                                      <script>
+                                        function addVariation() {
+                                          var number=document.getElementById('column_count2').value;
+                                          number=parseInt(number);
+                                          // alert(number);
+                                          number=number+1;
+                                          document.getElementById('column_count2').value=number;
+                                          document.getElementById("column2").insertAdjacentHTML("beforeend", 
+                                          " <div class='col-md-3'><input type='text' class='form-control' name='attr_name"+number+"' placeholder='Attribute Name "+number+"' value='<?php if(isset($_POST['attr_name"+number+"'])) echo $_POST['attr_name"+number+"']?>'></div><div class='col-md-9'> <div class='form-group '><div class='position-relative'><input type='text' class='form-control' name='detail"+number+"' placeholder='Add Price' value='<?php if(isset($_POST['detail"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div>");
+                                        }
+                                      </script>
+
+
+                                     <!--  <div class="col-md-3"><label>Add Variation Attribute:</label></div>
+                                      <div class="col-md-9">
+                                          <div class="form-group ">
+                                              <div class="position-relative">
+                                                  <input type="number" class="form-control" name="variation" >
+                                              </div>
+                                          </div>
+                                      </div> -->
                                       <div id="myList" class="row ">
                                           <div class="col-md-3"><label>Zoom Main Image 1: </label></div>
                                           <div class="col-md-9">
