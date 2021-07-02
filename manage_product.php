@@ -1,10 +1,15 @@
 <?php
 session_start();
 include('config.php');
-if(!isset($_SESSION['admin']))
+if(!isset($_SESSION['email']))
 {
-    // header("location:auth-login.php");
+    header("location:login.php");
 }
+$current_vendor_email = $_SESSION['email'];
+$query_vendor="SELECT * FROM `tbl_vendor` WHERE email = '$current_vendor_email'";
+$result_vendor = mysqli_query($conn, $query_vendor);
+$fetch_vendor = mysqli_fetch_assoc($result_vendor);
+$login_vendor_id = $fetch_vendor['id'];
 
 $query_category="SELECT * FROM `tbl_category`";
 $result_category = mysqli_query($conn, $query_category);
@@ -47,14 +52,7 @@ The above copyright notice and this permission notice shall be included in all c
 <body class="">
   <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white" data-image="assets/img/sidebar-1.jpg">
-      <!--
-        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-
-        Tip 2: you can also add an image using data-image tag
-        -->
-        <?php
-            include("sidemenu.php");
-        ?>
+        <?php  include("sidemenu.php"); ?>
         <script>
             document.getElementById("active_manageproduct").className = "nav-item active";
         </script>
@@ -121,7 +119,7 @@ The above copyright notice and this permission notice shall be included in all c
                   <a class="dropdown-item" href="#">Profile</a>
                   <a class="dropdown-item" href="#">Settings</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Log out</a>
+                  <a class="dropdown-item" href="logout.php">Log out</a>
                 </div>
               </li>
             </ul>
@@ -155,7 +153,7 @@ The above copyright notice and this permission notice shall be included in all c
                                 </thead>
                                 <tbody>
                                     <?php
-                                        $query_product="SELECT * FROM `tbl_product`";
+                                        $query_product="SELECT * FROM `tbl_product` WHERE vendor_id = '$login_vendor_id'";
                                         $result_product = mysqli_query($conn, $query_product);
                                         while($store = mysqli_fetch_array($result_product))
                                         {
@@ -177,7 +175,7 @@ The above copyright notice and this permission notice shall be included in all c
                                                  mysqli_data_seek($result_category,0);
                                                  while($category = mysqli_fetch_array($result_category))
                                                  {
-                                                     if($store['category_id']==$category['id'])
+                                                     if($store['sub_category_id']==$category['id'])
                                                      {
                                                          echo $category['name'];
                                                      }
@@ -189,7 +187,7 @@ The above copyright notice and this permission notice shall be included in all c
                                         <td><?php echo $store['star'] ?></td> 
                                         <td class="text-center">
                                         <a data-toggle="modal" data-target=".bd-example-modal-lg" href=""><i class="material-icons">more_horiz</i></a>
-                                        <a href="edit_product.php?id=<?php echo $store['id'] ?>" class="btn btn-primary">Edit</a>
+                                        <a href="edit_product2.php?id=<?php echo $store['id'] ?>" class="btn btn-primary">Edit</a>
                                         <a href="delete_product.php?id=<?php echo $store['id'] ?>" class="btn btn-secondary">Delete</a>
                                         </td>
                                     </tr>

@@ -104,7 +104,7 @@ The above copyright notice and this permission notice shall be included in all c
                   <a class="dropdown-item" href="#">Profile</a>
                   <a class="dropdown-item" href="#">Settings</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Log out</a>
+                  <a class="dropdown-item" href="logout.php">Log out</a>
                 </div>
               </li>
             </ul>
@@ -116,71 +116,79 @@ The above copyright notice and this permission notice shall be included in all c
         <div class="container-fluid">
           <div class="row">
             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                    <i class="material-icons">inventory</i>
+              <a href="inventory.php">
+                <div class="card card-stats">
+                  <div class="card-header card-header-warning card-header-icon">
+                    <div class="card-icon">
+                      <i class="material-icons">inventory</i>
+                    </div>
+                    <p class="card-category">In Stock/Out of Stock</p>
+                    <h3 class="card-title">Inventory
+                      
+                    </h3>
                   </div>
-                  <p class="card-category">In Stock/Out of Stock</p>
-                  <h3 class="card-title">Inventory
-                    
-                  </h3>
-                </div>
-                <div class="card-footer">
-                  <div class="stats">
-                   
+                  <div class="card-footer">
+                    <div class="stats">
+                     
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-success card-header-icon">
-                  <div class="card-icon">
-                    <i class="material-icons">local_shipping</i>
+              <a href="orders.php">
+                <div class="card card-stats">
+                  <div class="card-header card-header-success card-header-icon">
+                    <div class="card-icon">
+                      <i class="material-icons">local_shipping</i>
+                    </div>
+                    <p class="card-category">Orders and Order Details</p>
+                    <h3 class="card-title">
+                      Orders</h3>
                   </div>
-                  <p class="card-category">Orders and Order Details</p>
-                  <h3 class="card-title">
-                    Orders</h3>
-                </div>
-                <div class="card-footer">
-                  <div class="stats">
-                   
+                  <div class="card-footer">
+                    <div class="stats">
+                     
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-danger card-header-icon">
-                  <div class="card-icon">
-                    <i class="material-icons">payments</i>
+              <a href="payments.php">
+                <div class="card card-stats">
+                  <div class="card-header card-header-danger card-header-icon">
+                    <div class="card-icon">
+                      <i class="material-icons">payments</i>
+                    </div>
+                    <p class="card-category">Sub Payments Overview</p>
+                    <h3 class="card-title">Payments</h3>
                   </div>
-                  <p class="card-category">Sub Payments Overview</p>
-                  <h3 class="card-title">Payments</h3>
-                </div>
-                <div class="card-footer">
-                  <div class="stats">
-                   
+                  <div class="card-footer">
+                    <div class="stats">
+                     
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-info card-header-icon">
-                  <div class="card-icon">
-                    <i class="material-icons">style</i>
+              <a href="catelog.php">
+                <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                    <div class="card-icon">
+                      <i class="material-icons">style</i>
+                    </div>
+                    <p class="card-category">Add Catalogs in Bulk/Single</p>
+                    <h3 class="card-title">Catalog</h3>
                   </div>
-                  <p class="card-category">Add Catalogs in Bulk/Single</p>
-                  <h3 class="card-title">Catalog</h3>
-                </div>
-                <div class="card-footer">
-                  <div class="stats">
-                    
+                  <div class="card-footer">
+                    <div class="stats">
+                      
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
          

@@ -1,8 +1,7 @@
 <?php
 session_start();
 include('config.php');
-if(!isset($_SESSION['admin']))
-{
+if(!isset($_SESSION['admin'])){
     // header("location:auth-login.php");
 }
 $query_category="SELECT * FROM `tbl_category`";
@@ -18,7 +17,12 @@ $result_category = mysqli_query($conn, $query_category);
 $query_duration="SELECT * FROM `tbl_duration`";
 $result_duration = mysqli_query($conn, $query_duration);
 
-
+if(isset($_POST['id'])){
+echo "tess";
+}else
+{
+  echo "sdwsegfkejshcjwekhv";
+}
 ?>
 <!--
 =========================================================

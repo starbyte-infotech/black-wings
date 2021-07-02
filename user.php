@@ -1,3 +1,11 @@
+<?php
+session_start();
+include('config.php');
+if(!isset($_SESSION['email']))
+{
+    header("location:login.php");
+}
+?>
 <!--
 =========================================================
 Material Dashboard - v2.1.2
@@ -39,12 +47,8 @@ The above copyright notice and this permission notice shall be included in all c
 
         Tip 2: you can also add an image using data-image tag
     -->
-    <?php
-        include("sidemenu.php");
-    ?>
-    <script>
-        document.getElementById("active_user").className = "nav-item active";
-    </script>
+    <?php include("sidemenu.php"); ?>
+    <script> document.getElementById("active_user").className = "nav-item active"; </script>
     </div>
     <div class="main-panel">
       <!-- Navbar -->
@@ -108,7 +112,7 @@ The above copyright notice and this permission notice shall be included in all c
                   <a class="dropdown-item" href="#">Profile</a>
                   <a class="dropdown-item" href="#">Settings</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Log out</a>
+                  <a class="dropdown-item" href="logout.php">Log out</a>
                 </div>
               </li>
             </ul>

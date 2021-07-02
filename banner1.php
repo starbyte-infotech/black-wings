@@ -1,5 +1,10 @@
 <?php
 include("config.php");
+session_start();
+if(!isset($_SESSION['email']))
+{
+    header("location:login.php");
+}
 $banner_id=1;
 if(isset($_POST['submit_banner']))
 {
@@ -124,7 +129,7 @@ The above copyright notice and this permission notice shall be included in all c
                                     <a class="dropdown-item" href="#">Profile</a>
                                     <a class="dropdown-item" href="#">Settings</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Log out</a>
+                                    <a class="dropdown-item" href="logout.php">Log out</a>
                                 </div>
                             </li>
                         </ul>

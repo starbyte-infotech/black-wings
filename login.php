@@ -5,9 +5,7 @@ if (isset($_POST['Login']))
 {
 	$email = $_POST['email'];
 	$_SESSION['email'] = $email;
-
-	$password = $_POST['password'];
-	
+	$password = $_POST['password'];	
 	$_SESSION['password'] = $password;
 
 	if (filter_var($email, FILTER_VALIDATE_EMAIL)) {

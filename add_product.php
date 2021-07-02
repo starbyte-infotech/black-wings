@@ -1,12 +1,18 @@
 <?php
 session_start();
 include('config.php');
-if(!isset($_SESSION['admin']))
+if(!isset($_SESSION['email']))
 {
-    // header("location:auth-login.php");
+    header("location:login.php");
 }
+$current_vendor_email = $_SESSION['email'];
+$query_vendor="SELECT * FROM `tbl_vendor` WHERE email = '$current_vendor_email'";
+$result_vendor = mysqli_query($conn, $query_vendor);
+$fetch_vendor = mysqli_fetch_assoc($result_vendor);
+$login_vendor_id = $fetch_vendor['id'];
+
 $query_category="SELECT * FROM `tbl_category`";
-$result_category = mysqli_query($conn, $query_category);
+$result_category = mysqli_query($conn, $query_category);  
 
 // $query_color="SELECT * FROM `tbl_color`";
 // $result_color = mysqli_query($conn, $query_color);
@@ -58,10 +64,18 @@ if(isset($_POST['submit']))
     $return_time=$_POST['return_time'];
     $return_time_select=$_POST['return_time_select'];
     $delivery_time=$_POST['delivery_time'];
-    $category_id=$_POST['category_id'];
+    $sub_category_id=$_POST['sub_category_id'];
+    $variant_id=$_POST['variant_id'];
+    $brand_id=$_POST['brand_id'];
     $link=$_POST['link'];
     $star=$_POST['star'];
     $customer=$_POST['customer'];
+    $total_product=$_POST['total_product'];
+    if($total_product > 0){
+      $stock = 'instock';
+    }else{
+      $stock = 'outofstock';
+    }
     $status = 'Pending';
     $variations = $_POST['variations'];
 
@@ -71,10 +85,8 @@ if(isset($_POST['submit']))
     $no=$store_search['id']+1;
     mysqli_autocommit($conn,FALSE);
 
-    $query_insert="INSERT INTO `tbl_product` (`id`, `name`, `detail`, `benefits`, `usages`, `MRP`, `sale_price`,`sale_price1`, `CGST`, `SGST`, `IGST`,
-    `return_time`, `delivery_time`, `category_id`,`credit`,`link`,`star`,`customer`, `created_at`,`status`) 
-    VALUES ('$no', '$name', '$detail', '$benefits', '$usages', '$mrp', '$sale_price','$sale_price1', '$cgst', '$sgst', '$igst', '$return_time $return_time_select', 
-    '$delivery_time', '$category_id',  '0','$link','$star','$customer', current_timestamp(),'$status')";
+    $query_insert="INSERT INTO `tbl_product` (`id`, `name`, `detail`, `benefits`, `usages`, `MRP`, `sale_price`,`sale_price1`, `CGST`, `SGST`, `IGST`,`return_time`, `delivery_time`, `sub_category_id`,`variant_id`,`brand_id`,`credit`,`link`,`star`,`customer`, `total_product`, `stock`, `created_at`,`status`, `vendor_id`) 
+    VALUES ('$no', '$name', '$detail', '$benefits', '$usages', '$mrp', '$sale_price','$sale_price1', '$cgst', '$sgst', '$igst', '$return_time $return_time_select', '$delivery_time', '$sub_category_id','$variant_id', '$brand_id','0','$link','$star','$customer' ,'$total_product', '$stock', current_timestamp(),'$status', '$login_vendor_id')";
     $result1 = mysqli_query($conn, $query_insert);
     if($result1)
     {
@@ -82,9 +94,8 @@ if(isset($_POST['submit']))
         for ($x = 1; $x <=$column_count; $x++) 
         {
           $column_name=$_POST['column_name'.$x]; 
-          $detail=$_POST['detail'.$x];
-          $query_detail_insert="INSERT INTO `tbl_product_detail` (`id`, `column_name`, `detail`, `product_id`) VALUES (NULL, 
-          '$column_name', '$detail', $no);";
+          $detail=$_POST['detail_col'.$x];  
+          $query_detail_insert="INSERT INTO `tbl_product_detail` (`column_name`, `detail`, `product_id`) VALUES ('$column_name', '$detail', '$no')";  
           $result_detail_insert = mysqli_query($conn, $query_detail_insert);
           
         }
@@ -93,9 +104,26 @@ if(isset($_POST['submit']))
         {
           $attribute_name=$_POST['attr_name'.$x];//red
           $price=$_POST['detail'.$x]; //price
-          $query_variation = "INSERT INTO `tbl_product_variation` (`product_id`,`name`,`attributes`,`price`) VALUES ('$no','$variations', '$attribute_name', '$price')"; 
-          $result_variation = mysqli_query($conn, $query_variation);
-          
+          $total_product=$_POST['total'.$x]; //total_product
+
+          $select_variation = "SELECT * FROM `tbl_product_variation` WHERE `name`='$variations' AND `attributes`='$attribute_name'"; 
+          $var_res = mysqli_query($conn,$select_variation);  
+          $num_rows = mysqli_num_rows($var_res);
+          if($num_rows == 0){
+
+            //add new attribute
+            $edit_query = "UPDATE tbl_attributes SET `attributes` = CONCAT(attributes, ', $attribute_name') WHERE `name` = '$variations'"; 
+            $att_result = mysqli_query($conn, $edit_query);
+            if($att_result){
+              // echo '<script>alert("Insert New Attribute")</script>';
+              $query_variation = "INSERT INTO `tbl_product_variation` (`product_id`,`name`,`attributes`,`price`, `total_product`) VALUES ('$no','$variations', '$attribute_name', '$price','$total_product')"; 
+                $result_variation = mysqli_query($conn, $query_variation);
+            }
+          }else{
+              
+              $query_variation = "INSERT INTO `tbl_product_variation` (`product_id`,`name`,`attributes`,`price`, `total_product`) VALUES ('$no','$variations', '$attribute_name', '$price' , '$total_product')"; 
+              $result_variation = mysqli_query($conn, $query_variation);
+          }
         }
         $image_count=$_POST['image_count'];
         for ($x = 1; $x <=$image_count; $x++) 
@@ -407,6 +435,14 @@ The above copyright notice and this permission notice shall be included in all c
                                               </div>
                                           </div>
                                       </div> 
+                                      <div class="col-md-3"><label>Add Total Products :</label></div>
+                                      <div class="col-md-9">
+                                          <div class="form-group ">
+                                              <div class="position-relative">
+                                                  <input type="text" class="form-control" name="total_product">
+                                              </div>
+                                          </div>
+                                      </div>
                                       <div id="column" class="row col-md-12">
                                         
                                       </div>
@@ -422,7 +458,7 @@ The above copyright notice and this permission notice shall be included in all c
                                               number=number+1;
                                               document.getElementById('column_count').value=number;
                                               document.getElementById("column").insertAdjacentHTML("beforeend", 
-                                              " <div class='col-md-3'><input type='text' class='form-control' name='column_name"+number+"' placeholder='Column Name "+number+"' value='<?php if(isset($_POST['column_name"+number+"'])) echo $_POST['column_name"+number+"']?>'></div><div class='col-md-9'> <div class='form-group '><div class='position-relative'><input type='text' class='form-control' name='detail"+number+"' placeholder='Details Related To column Name' value='<?php if(isset($_POST['detail"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div>");
+                                              " <div class='col-md-3'><input type='text' class='form-control' name='column_name"+number+"' placeholder='Column Name "+number+"' value='<?php if(isset($_POST['column_name"+number+"'])) echo $_POST['column_name"+number+"']?>'></div><div class='col-md-9'> <div class='form-group '><div class='position-relative'><input type='text' class='form-control' name='detail_col"+number+"' placeholder='Details Related To column Name' value='<?php if(isset($_POST['detail_col"+number+"'])) echo $_POST['detail_col"+number+"']?>'></div></div></div>");
                                           }
                                       </script>
                                       
@@ -509,7 +545,7 @@ The above copyright notice and this permission notice shall be included in all c
                                       <div class="col-md-9">
                                           <div class="form-group ">
                                               <div class="position-relative">
-                                              <select name="category_id" class="form-control" >
+                                              <select name="category_id" class="form-control" id="category" onchange="add_sub_category()" required>
                                                           <option value="">Select Category Value Only</option>
                                                           <?php                                                                     
                                                               while($store = mysqli_fetch_array($result_category))
@@ -523,6 +559,81 @@ The above copyright notice and this permission notice shall be included in all c
                                               </div>
                                           </div>
                                       </div>
+                                      
+                                      <div class="col-md-3"><label>Select Sub Category :</label></div>
+                                      <div class="col-md-9">
+                                          <div class="form-group ">
+                                              <div class="position-relative">
+                                              <select name="sub_category_id" id="sub_category" class="form-control" >
+                                                  <option value="">Select Sub Category Value Only</option>                                                         
+                                              </select>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <script>
+                                      function add_sub_category()
+                                      {
+
+                                          category=document.getElementById("category").value;
+                                          // alert(category);
+                                          jQuery.ajax({
+                                              url: "ajax/add_sub_category.php",
+                                              type: "POST",
+                                              data:{
+                                                      "_token": "{{ csrf_token() }}",
+                                                      "category":category
+                                              },
+                                              success: function(data)
+                                              {
+                                                  jQuery('#sub_category').replaceWith(data);
+                                                  // console.log(data);
+                                                  
+                                              }
+                                          });
+                                      }
+                                      </script>
+                                      <div class="col-md-12 row" id="brand_variant">
+                                        <div class="col-md-3"><label>Select brand :</label></div>
+                                        <div class="col-md-9">
+                                            <div class="form-group ">
+                                                <div class="position-relative">
+                                                <select name="brand_id" id="brand" class="form-control" >
+                                                    <option value="">Select Brand Value Only</option>                                                         
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3"><label>Select Variant :</label></div>
+                                        <div class="col-md-9">
+                                            <div class="form-group ">
+                                                <div class="position-relative">
+                                                <select name="variant_id" id="variant" class="form-control" >
+                                                    <option value="">Select Variant Value Only</option>                                                         
+                                                </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                      <script>
+                                      function add_brand_variant()
+                                      {
+
+                                          sub_category=document.getElementById("sub_category").value;
+                                          jQuery.ajax({
+                                              url: "ajax/add_brand_variant.php",
+                                              type: "POST",
+                                              data:{
+                                                      "_token": "{{ csrf_token() }}",
+                                                      "sub_category":sub_category
+                                              },
+                                              success: function(data)
+                                              {
+                                                  jQuery('#brand_variant').replaceWith(data);
+                                                  
+                                              }
+                                          });
+                                      }
+                                      </script>
                                       <div class="col-md-3"><label>Select Variations :</label></div>
                                       <div class="col-md-9">
                                           <div class="form-group ">
@@ -556,7 +667,7 @@ The above copyright notice and this permission notice shall be included in all c
                                           number=number+1;
                                           document.getElementById('column_count2').value=number;
                                           document.getElementById("column2").insertAdjacentHTML("beforeend", 
-                                          " <div class='col-md-3'><input type='text' class='form-control' name='attr_name"+number+"' placeholder='Attribute Name "+number+"' value='<?php if(isset($_POST['attr_name"+number+"'])) echo $_POST['attr_name"+number+"']?>'></div><div class='col-md-9'> <div class='form-group '><div class='position-relative'><input type='text' class='form-control' name='detail"+number+"' placeholder='Add Price' value='<?php if(isset($_POST['detail"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div>");
+                                          " <div class='col-md-3'><input type='text' class='form-control' name='attr_name"+number+"' placeholder='Attribute Name "+number+"' value='<?php if(isset($_POST['attr_name"+number+"'])) echo $_POST['attr_name"+number+"']?>'></div><div class='col-md-4'> <div class='form-group '><div class='position-relative'><input type='number' class='form-control' name='detail"+number+"' placeholder='Add Price' value='<?php if(isset($_POST['detail"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div><div class='col-md-4'> <div class='form-group '><div class='position-relative'><input type='number' class='form-control' name='total"+number+"' placeholder='Add Stock' value='<?php if(isset($_POST['total"+number+"'])) echo $_POST['detail"+number+"']?>'></div></div></div>");
                                         }
                                       </script>
 
@@ -569,7 +680,7 @@ The above copyright notice and this permission notice shall be included in all c
                                               </div>
                                           </div>
                                       </div> -->
-                                      <div id="myList" class="row ">
+                                      <div id="myList" style="display: contents;" class="row ">
                                           <div class="col-md-3"><label>Zoom Main Image 1: </label></div>
                                           <div class="col-md-9">
                                               <input type="file"  class="form-control" name="main_image1" accept="image/*">
